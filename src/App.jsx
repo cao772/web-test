@@ -2,6 +2,14 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Grid, Line, OrbitControls, RoundedBox, Text } from '@react-three/drei'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
+import {
+  CableTrays,
+  FacilityShell,
+  IncidentPath,
+  InfrastructureAssets,
+  NetworkFlow,
+  ThermalPlume,
+} from './sceneEnhancements'
 
 const STATUS = {
   healthy: { label: '正常', color: '#53f3c3' },
@@ -114,11 +122,11 @@ function Rack({ rack, selected, onSelect, heatmap }) {
         </mesh>
       )}
 
-      <RoundedBox args={[1.55, 4.2, 1.45]} radius={0.07} smoothness={3} position={[0, 2.12, 0]}>
+      <RoundedBox args={[1.55, 4.2, 1.45]} radius={0.07} smoothness={3} position={[0, 2.12, 0]} castShadow>
         <meshStandardMaterial color="#071219" metalness={0.72} roughness={0.38} />
       </RoundedBox>
 
-      <mesh position={[0, 2.12, 0.735]}>
+      <mesh position={[0, 2.12, 0.735]} castShadow>
         <boxGeometry args={[1.63, 4.28, 0.035]} />
         <meshStandardMaterial color={frameColor} emissive={frameColor} emissiveIntensity={selected ? 0.42 : 0.08} />
       </mesh>
@@ -126,6 +134,15 @@ function Rack({ rack, selected, onSelect, heatmap }) {
       <mesh position={[0, 4.27, 0]}>
         <boxGeometry args={[1.72, 0.08, 1.58]} />
         <meshStandardMaterial color="#315466" metalness={0.55} roughness={0.28} />
+      </mesh>
+
+      <mesh position={[-0.72, 2.12, 0.77]}>
+        <boxGeometry args={[0.055, 3.78, 0.045]} />
+        <meshStandardMaterial color="#385565" metalness={0.7} roughness={0.28} />
+      </mesh>
+      <mesh position={[0.72, 2.12, 0.77]}>
+        <boxGeometry args={[0.055, 3.78, 0.045]} />
+        <meshStandardMaterial color="#385565" metalness={0.7} roughness={0.28} />
       </mesh>
 
       {serverRows.map((row) => {
@@ -254,22 +271,26 @@ function CameraRig({ selectedRack, racks, tour }) {
       enableDamping
       dampingFactor={0.07}
       minDistance={4}
-      maxDistance={30}
+      maxDistance={32}
       maxPolarAngle={Math.PI / 2.04}
     />
   )
 }
 
-function DataCenterScene({ racks, selectedRack, onSelect, heatmap, links, airflow, tour }) {
+function DataCenterScene({ racks, selectedRack, onSelect, heatmap, links, airflow, tour, incident }) {
   return (
     <>
-      <color attach="background" args={['#050a0f']} />
-      <fog attach="fog" args={['#050a0f', 16, 37]} />
-      <ambientLight intensity={0.62} color="#9bd9ff" />
-      <directionalLight position={[6, 12, 8]} intensity={1.45} color="#d8f5ff" />
-      <pointLight position={[0, 3.5, 0]} intensity={15} distance={16} color="#1f88b4" />
-      <pointLight position={[-10, 2, -5]} intensity={8} distance={10} color="#21d4b2" />
-      <pointLight position={[10, 2, 5]} intensity={8} distance={10} color="#3a7bff" />
+      <color attach="background" args={['#04080c']} />
+      <fog attach="fog" args={['#04080c', 18, 41]} />
+      <ambientLight intensity={0.38} color="#9bd9ff" />
+      <directionalLight position={[6, 12, 8]} intensity={1.7} color="#d8f5ff" castShadow />
+      <pointLight position={[0, 3.5, 0]} intensity={13} distance={16} color="#1f88b4" />
+      <pointLight position={[-10, 2, -5]} intensity={7} distance={10} color="#21d4b2" />
+      <pointLight position={[10, 2, 5]} intensity={7} distance={10} color="#3a7bff" />
+
+      <FacilityShell />
+      <CableTrays />
+      <InfrastructureAssets incident={incident} />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow onClick={() => onSelect(null)}>
         <planeGeometry args={[31, 19]} />
@@ -280,13 +301,13 @@ function DataCenterScene({ racks, selectedRack, onSelect, heatmap, links, airflo
         position={[0, 0.012, 0]}
         args={[31, 19]}
         cellSize={0.8}
-        cellThickness={0.55}
-        cellColor="#183643"
+        cellThickness={0.5}
+        cellColor="#15303b"
         sectionSize={4}
-        sectionThickness={0.85}
+        sectionThickness={0.8}
         sectionColor="#24556a"
-        fadeDistance={23}
-        fadeStrength={1.4}
+        fadeDistance={26}
+        fadeStrength={1.6}
         infiniteGrid={false}
       />
 
@@ -310,7 +331,10 @@ function DataCenterScene({ racks, selectedRack, onSelect, heatmap, links, airflo
       ))}
 
       <NetworkLinks racks={racks} visible={links} />
+      <NetworkFlow visible={links} />
       <CoolingAirflow visible={airflow} />
+      <IncidentPath active={incident} />
+      <ThermalPlume active={incident} />
       <CameraRig selectedRack={selectedRack} racks={racks} tour={tour} />
     </>
   )
@@ -387,7 +411,7 @@ function App() {
         {
           time: now,
           level: next ? 'critical' : 'info',
-          text: next ? '已注入 RACK-07 冷却异常，正在模拟局部热点' : 'RACK-07 故障模拟已解除，进入恢复阶段',
+          text: next ? '已注入 CRAC-02 冷却异常，故障链路指向 RACK-07' : 'CRAC-02 故障模拟已解除，RACK-07 进入恢复阶段',
         },
         ...items,
       ].slice(0, 5))
@@ -406,7 +430,16 @@ function App() {
   return (
     <main className="app-shell">
       <div className="scene-layer">
-        <Canvas camera={{ position: [12, 8.2, 15], fov: 46 }} dpr={[1, 1.75]} gl={{ antialias: true }}>
+        <Canvas
+          shadows
+          camera={{ position: [12, 8.2, 15], fov: 46 }}
+          dpr={[1, 1.75]}
+          gl={{ antialias: true }}
+          onCreated={({ gl }) => {
+            gl.toneMapping = THREE.ACESFilmicToneMapping
+            gl.toneMappingExposure = 1.08
+          }}
+        >
           <Suspense fallback={null}>
             <DataCenterScene
               racks={racks}
@@ -416,6 +449,7 @@ function App() {
               links={links}
               airflow={airflow}
               tour={tour}
+              incident={incident}
             />
           </Suspense>
         </Canvas>
@@ -510,8 +544,8 @@ function App() {
             <div className={`ai-card ${selected.status === 'critical' ? 'ai-card--critical' : ''}`}>
               <div className="ai-badge">AI</div>
               <div>
-                <strong>{selected.status === 'critical' ? '检测到局部热点正在扩大' : '运行状态可控'}</strong>
-                <p>{selected.status === 'critical' ? '建议检查 CRAC-02 风量，并将本机柜 GPU 负载临时降低至 70% 以下。' : '当前主要关注入口温度与 GPU 峰值负载，未检测到需要立即处置的问题。'}</p>
+                <strong>{selected.status === 'critical' ? '检测到 CRAC-02 → RACK-07 局部热点链路' : '运行状态可控'}</strong>
+                <p>{selected.status === 'critical' ? 'CRAC-02 风量下降导致冷量不足，建议降低本机柜 GPU 负载并检查制冷单元；3D 场景已高亮故障传播路径。' : '当前主要关注入口温度与 GPU 峰值负载，未检测到需要立即处置的问题。'}</p>
               </div>
             </div>
           </>
@@ -534,7 +568,7 @@ function App() {
         </div>
       </section>
 
-      <div className="corner-label">DC-01 · ROOM A · DIGITAL TWIN 0.1</div>
+      <div className="corner-label">DC-01 · ROOM A · DIGITAL TWIN 0.2</div>
     </main>
   )
 }
