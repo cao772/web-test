@@ -1,5 +1,6 @@
 import { Line, RoundedBox, Text } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
+import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
 
@@ -19,39 +20,45 @@ export function FacilityShell() {
   const lights = [-10, -5, 0, 5, 10]
   const columns = [-12, -6, 0, 6, 12]
   return (
-    <group>
-      <mesh position={[0, 3.15, -9.2]} receiveShadow>
-        <boxGeometry args={[30, 6.3, 0.18]} />
-        <meshStandardMaterial color="#09151d" metalness={0.48} roughness={0.58} />
-      </mesh>
-      <mesh position={[-15.05, 3.15, 0]} receiveShadow>
-        <boxGeometry args={[0.18, 6.3, 18.5]} />
-        <meshStandardMaterial color="#08131a" metalness={0.45} roughness={0.62} />
-      </mesh>
-      <mesh position={[15.05, 3.15, 0]} receiveShadow>
-        <boxGeometry args={[0.18, 6.3, 18.5]} />
-        <meshStandardMaterial color="#08131a" metalness={0.45} roughness={0.62} />
-      </mesh>
+    <>
+      <group>
+        <mesh position={[0, 3.15, -9.2]} receiveShadow>
+          <boxGeometry args={[30, 6.3, 0.18]} />
+          <meshStandardMaterial color="#09151d" metalness={0.48} roughness={0.58} />
+        </mesh>
+        <mesh position={[-15.05, 3.15, 0]} receiveShadow>
+          <boxGeometry args={[0.18, 6.3, 18.5]} />
+          <meshStandardMaterial color="#08131a" metalness={0.45} roughness={0.62} />
+        </mesh>
+        <mesh position={[15.05, 3.15, 0]} receiveShadow>
+          <boxGeometry args={[0.18, 6.3, 18.5]} />
+          <meshStandardMaterial color="#08131a" metalness={0.45} roughness={0.62} />
+        </mesh>
 
-      {columns.map((x) => (
-        <group key={x}>
-          <mesh position={[x, 3.05, -8.8]} castShadow>
-            <boxGeometry args={[0.24, 6.1, 0.34]} />
-            <meshStandardMaterial color="#1b303c" metalness={0.72} roughness={0.3} />
-          </mesh>
-          <mesh position={[x, 5.98, 0]}>
-            <boxGeometry args={[0.18, 0.22, 18]} />
-            <meshStandardMaterial color="#182d38" metalness={0.74} roughness={0.32} />
-          </mesh>
-        </group>
-      ))}
+        {columns.map((x) => (
+          <group key={x}>
+            <mesh position={[x, 3.05, -8.8]} castShadow>
+              <boxGeometry args={[0.24, 6.1, 0.34]} />
+              <meshStandardMaterial color="#1b303c" metalness={0.72} roughness={0.3} />
+            </mesh>
+            <mesh position={[x, 5.98, 0]}>
+              <boxGeometry args={[0.18, 0.22, 18]} />
+              <meshStandardMaterial color="#182d38" metalness={0.74} roughness={0.32} />
+            </mesh>
+          </group>
+        ))}
 
-      {lights.flatMap((x) => [-5.9, 0, 5.9].map((z) => <CeilingLight key={`${x}-${z}`} x={x} z={z} />))}
+        {lights.flatMap((x) => [-5.9, 0, 5.9].map((z) => <CeilingLight key={`${x}-${z}`} x={x} z={z} />))}
 
-      <Text position={[0, 4.9, -9.05]} fontSize={0.72} color="#264c5c" anchorX="center">
-        DC-01 · AI COMPUTE HALL
-      </Text>
-    </group>
+        <Text position={[0, 4.9, -9.05]} fontSize={0.72} color="#264c5c" anchorX="center">
+          DC-01 · AI COMPUTE HALL
+        </Text>
+      </group>
+
+      <EffectComposer multisampling={0}>
+        <Bloom intensity={0.78} luminanceThreshold={0.62} luminanceSmoothing={0.18} mipmapBlur />
+      </EffectComposer>
+    </>
   )
 }
 
