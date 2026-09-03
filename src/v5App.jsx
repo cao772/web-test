@@ -103,6 +103,9 @@ export default function V5App() {
   const [beforeSnapshot, setBeforeSnapshot] = useState(null)
   const [afterSnapshot, setAfterSnapshot] = useState(null)
   const demoTimer = useRef(null)
+  const racksRef = useRef(racks)
+
+  useEffect(() => { racksRef.current = racks }, [racks])
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -166,7 +169,8 @@ export default function V5App() {
       let ok = true
       switch (call.name) {
         case 'focus_hottest': {
-          const hottest = racks.reduce((a, b) => a.temp > b.temp ? a : b)
+          const latestRacks = racksRef.current
+          const hottest = latestRacks.reduce((a, b) => a.temp > b.temp ? a : b)
           selectRack(hottest.id); response.push(`定位 ${hottest.id} ${hottest.temp.toFixed(1)}°C`); break
         }
         case 'focus_rack': selectRack(call.arguments.rack_id); response.push(`聚焦 ${call.arguments.rack_id}`); break
@@ -196,7 +200,8 @@ export default function V5App() {
     if (!command) return
     setAgentInput('')
     setAgentMessage('正在规划场景工具…')
-    const context = { racks: racks.map(({ id, temp, gpu, power, status }) => ({ id, temp, gpu, power, status })), incident, selectedRack, selectedDevice }
+    const latestRacks = racksRef.current
+    const context = { racks: latestRacks.map(({ id, temp, gpu, power, status }) => ({ id, temp, gpu, power, status })), incident, selectedRack, selectedDevice }
     const result = await planWithModel(command, context)
     setPlannerSource(result.source === 'model' ? 'MODEL' : result.source === 'fallback' ? 'FALLBACK' : 'LOCAL')
     executeToolCalls(result.toolCalls, command, 'agent')
@@ -212,7 +217,7 @@ export default function V5App() {
   const executeDemoStep = (index) => {
     const step = AUTO_DEMO_STEPS[index]
     if (!step) {
-      const rack = racks.find((item) => item.id === 'RACK-07')
+      const rack = racksRef.current.find((item) => item.id === 'RACK-07')
       setAfterSnapshot(captureRackSnapshot(rack))
       setDemoRunning(false)
       setDemoStep(AUTO_DEMO_STEPS.length)
@@ -224,19 +229,17 @@ export default function V5App() {
     setDemoMessage(step.message)
     pushEvent(index === 1 ? 'critical' : index >= 4 ? 'warning' : 'info', `演示步骤 ${index + 1}：${step.label}`)
     if (index === 1) {
-      const rack = racks.find((item) => item.id === 'RACK-07')
+      const rack = racksRef.current.find((item) => item.id === 'RACK-07')
       setBeforeSnapshot(captureRackSnapshot(rack))
       setAfterSnapshot(null)
     }
     executeToolCalls(step.calls, step.label, 'demo')
     if (index === AUTO_DEMO_STEPS.length - 1) {
       demoTimer.current = window.setTimeout(() => {
-        setRacks((current) => {
-          const rack = current.find((item) => item.id === 'RACK-07')
-          setAfterSnapshot(captureRackSnapshot(rack))
-          return current
-        })
+        const rack = racksRef.current.find((item) => item.id === 'RACK-07')
+        setAfterSnapshot(captureRackSnapshot(rack))
         setDemoRunning(false); setDemoStep(AUTO_DEMO_STEPS.length); setDemoMessage('演示完成：故障定位、降载、恢复制冷和前后对比已完成。')
+        pushEvent('info', '自动演示完成，已生成处置前后对比')
       }, step.duration)
     } else {
       demoTimer.current = window.setTimeout(() => executeDemoStep(index + 1), step.duration)
