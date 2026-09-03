@@ -1,0 +1,141 @@
+.rack-back-button {
+  width: 100%;
+  margin: 10px 0 2px;
+  padding: 7px 9px;
+  border: 1px solid rgba(98,221,247,.18);
+  border-radius: 6px;
+  color: #8db6c2;
+  background: rgba(13,37,47,.44);
+  cursor: pointer;
+  font-size: 9px;
+  text-align: left;
+  transition: .2s ease;
+}
+.rack-back-button:hover {
+  color: #d9f9ff;
+  border-color: rgba(98,221,247,.42);
+  background: rgba(29,84,99,.36);
+}
+
+.agent-command-panel {
+  position: absolute;
+  z-index: 5;
+  left: 208px;
+  bottom: 105px;
+  width: min(570px, calc(100vw - 590px));
+  padding: 11px 13px 10px;
+  border-radius: 9px;
+  overflow: hidden;
+}
+.agent-command-panel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(180deg, #62ddf7, rgba(83,243,195,.18));
+  box-shadow: 0 0 14px rgba(98,221,247,.34);
+}
+.agent-command-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 10px;
+  color: #b5dbe5;
+}
+.agent-command-head > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 600;
+}
+.agent-command-head small {
+  color: #547c89;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 8px;
+}
+.agent-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #53f3c3;
+  box-shadow: 0 0 10px #53f3c3;
+  animation: agentPulse 1.45s ease-in-out infinite;
+}
+@keyframes agentPulse { 50% { opacity: .38; transform: scale(.78); } }
+.agent-response {
+  margin: 7px 0 8px;
+  min-height: 25px;
+  color: #718f9a;
+  font-size: 9px;
+  line-height: 1.45;
+}
+.agent-input-row {
+  display: grid;
+  grid-template-columns: 1fr 54px;
+  gap: 7px;
+}
+.agent-input-row input {
+  width: 100%;
+  min-width: 0;
+  height: 31px;
+  border: 1px solid rgba(110,200,224,.17);
+  border-radius: 6px;
+  outline: none;
+  padding: 0 10px;
+  color: #cceef5;
+  background: rgba(5,16,22,.72);
+  font: 9px "IBM Plex Mono", monospace;
+  transition: .2s ease;
+}
+.agent-input-row input:focus {
+  border-color: rgba(98,221,247,.42);
+  box-shadow: 0 0 0 2px rgba(98,221,247,.05), inset 0 0 16px rgba(98,221,247,.035);
+}
+.agent-input-row input::placeholder { color: #456572; }
+.agent-input-row button {
+  border: 1px solid rgba(98,221,247,.28);
+  border-radius: 6px;
+  color: #d3f7ff;
+  background: linear-gradient(180deg, rgba(32,119,141,.45), rgba(18,67,81,.38));
+  font-size: 9px;
+  cursor: pointer;
+}
+.agent-input-row button:hover { border-color: rgba(98,221,247,.58); background: rgba(33,120,140,.5); }
+.agent-quick-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 7px;
+  overflow: hidden;
+}
+.agent-quick-row button {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 25px;
+  padding: 0 7px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid rgba(125,196,216,.12);
+  border-radius: 5px;
+  color: #668a96;
+  background: rgba(12,30,38,.44);
+  font-size: 8px;
+  cursor: pointer;
+  transition: .18s ease;
+}
+.agent-quick-row button:hover {
+  color: #b9e6ef;
+  border-color: rgba(98,221,247,.27);
+  background: rgba(22,62,74,.5);
+}
+
+@media (max-height: 820px) {
+  .agent-command-panel {
+    transform: scale(.92);
+    transform-origin: bottom left;
+    bottom: 94px;
+  }
+}
