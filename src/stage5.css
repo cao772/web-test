@@ -1,0 +1,51 @@
+.app-v5 .metrics-row { left: 224px; right: 360px; }
+.v5-left-panel { width: 190px; max-height: calc(100vh - 122px); overflow: hidden; }
+.v5-detail-panel { width: 326px; }
+.v5-mode-badge { border-color: rgba(98,221,247,.32); background: rgba(13,63,78,.34); }
+
+.demo-start-button {
+  width: 100%; min-height: 42px; margin: 14px 0 10px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(83,243,195,.34); color: #cffff1; background: linear-gradient(180deg, rgba(30,113,91,.32), rgba(15,63,54,.24));
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 0 22px rgba(83,243,195,.08);
+}
+.demo-start-button:hover { border-color: rgba(83,243,195,.58); background: rgba(33,119,94,.4); }
+.demo-start-button.running { color: #ffd4db; border-color: rgba(255,90,115,.46); background: rgba(118,31,45,.35); }
+.demo-message { min-height: 43px; margin: 0 0 10px; color: #789aa6; font-size: 9px; line-height: 1.55; }
+
+.demo-timeline { display: grid; gap: 4px; }
+.demo-step { display: grid; grid-template-columns: 20px 1fr; align-items: center; gap: 7px; min-height: 31px; padding: 4px 6px; border: 1px solid rgba(115,185,205,.08); border-radius: 6px; background: rgba(8,24,31,.35); opacity: .58; transition: .25s; }
+.demo-step > span { width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; color: #5d7d89; border: 1px solid rgba(110,171,189,.2); font: 8px "IBM Plex Mono", monospace; }
+.demo-step strong, .demo-step small { display: block; }
+.demo-step strong { color: #7596a1; font-size: 9px; font-weight: 500; }
+.demo-step small { margin-top: 2px; color: #4f6d77; font-size: 7px; }
+.demo-step.done { opacity: .82; border-color: rgba(83,243,195,.13); }
+.demo-step.done > span { color: #83f4d2; border-color: rgba(83,243,195,.32); background: rgba(83,243,195,.08); }
+.demo-step.active { opacity: 1; transform: translateX(2px); border-color: rgba(98,221,247,.38); background: rgba(34,119,145,.18); box-shadow: 0 0 16px rgba(98,221,247,.08); }
+.demo-step.active > span { color: #d8fbff; background: #287991; border-color: #67dff8; box-shadow: 0 0 10px rgba(98,221,247,.5); }
+.demo-step.active strong { color: #d4f8ff; }
+.compact-controls { grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
+.compact-controls .control-button { min-height: 31px; padding: 0 6px; font-size: 8px; gap: 5px; }
+
+.snapshot-compare { margin-top: 10px; padding: 10px; border: 1px solid rgba(98,221,247,.16); background: linear-gradient(145deg, rgba(12,42,53,.55), rgba(7,23,30,.42)); border-radius: 7px; }
+.snapshot-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+.snapshot-title strong { font-size: 9px; color: #a9cad3; }
+.snapshot-title span { color: #5f8795; font: 8px "IBM Plex Mono", monospace; }
+.compare-row, .compare-status { display: grid; grid-template-columns: 1fr 48px 12px 48px; align-items: center; min-height: 21px; border-top: 1px solid rgba(120,190,210,.07); }
+.compare-row span, .compare-status span { color: #668a96; font-size: 8px; }
+.compare-row b, .compare-row strong, .compare-status b, .compare-status strong { font: 8px "IBM Plex Mono", monospace; font-weight: 500; text-align: right; }
+.compare-row b, .compare-status b { color: #d8939d; }
+.compare-row strong, .compare-status strong { color: #6ee9c5; }
+.compare-row i, .compare-status i { color: #54727c; text-align: center; font-style: normal; font-size: 8px; }
+
+.v5-agent-console { width: min(650px, calc(100vw - 610px)); }
+.agent-runtime-state.source-model { color: #6eeaff; border-color: rgba(110,234,255,.35); }
+.agent-runtime-state.source-fallback { color: #ffc857; border-color: rgba(255,200,87,.3); }
+.agent-runtime-state.source-local { color: #53f3c3; }
+.agent-quick-row button:disabled, .agent-input-row input:disabled, .agent-input-row button:disabled { opacity: .42; cursor: not-allowed; }
+.v5-event-panel { bottom: 18px; }
+
+@media (max-height: 850px) {
+  .v5-left-panel { transform: scale(.88); transform-origin: top left; }
+  .v5-detail-panel { transform: scale(.88); transform-origin: top right; }
+  .v5-agent-console { transform: scale(.91); transform-origin: bottom left; }
+}
